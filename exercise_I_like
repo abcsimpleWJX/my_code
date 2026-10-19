@@ -1,1 +1,47 @@
+#include <stdio.h>
+#define MAX 100000
+int cnt[MAX + 10] = { 0 };
 
+int main()
+{
+    int N;
+    scanf("%d", &N);
+
+    int x;
+    int min_id = MAX, max_id = 0;
+
+    
+    for (int i = 0; i < N; i++)
+    {
+        
+        while (1)
+        {
+            int ret = scanf("%d", &x);
+            if (ret != 1) break; 
+            cnt[x]++;
+            if (x < min_id) min_id = x;
+            if (x > max_id) max_id = x;
+
+            
+            char ch;
+            scanf("%c", &ch);
+            if (ch == '\n') break;
+        }
+    }
+
+    int miss = -1, repeat = -1;
+    
+    for (int i = min_id; i <= max_id; i++)
+    {
+        if (cnt[i] == 0)
+        {
+            miss = i;
+        }
+        else if (cnt[i] == 2)
+        {
+            repeat = i;
+        }
+    }
+    printf("%d %d", miss, repeat);
+    return 0;
+}
