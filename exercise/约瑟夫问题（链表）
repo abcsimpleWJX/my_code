@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+int main() {
+    int n, s, m;
+    if (scanf("%d %d %d", &n, &s, &m) != 3) {
+        return 0;
+    }
+
+    int next[1005]; 
+
+    
+    for (int i = 1; i <= n; i++) {
+        next[i] = (i % n) + 1;
+    }
+
+    
+    s = (s - 1) % n + 1;
+
+    int curr = s;                         
+    int prev = (curr == 1) ? n : curr - 1; 
+
+    
+    for (int i = 1; i <= n; i++) {
+        int len = n - i + 1;      
+        int steps = (m - 1) % len; 
+
+        
+        for (int j = 0; j < steps; j++) {
+            prev = curr;
+            curr = next[curr];
+        }
+
+        
+        if (i > 1) {
+            printf(" ");
+        }
+        printf("%d", curr);
+
+        
+        next[prev] = next[curr];
+        
+        curr = next[curr];
+    }
+    return 0;
+}
