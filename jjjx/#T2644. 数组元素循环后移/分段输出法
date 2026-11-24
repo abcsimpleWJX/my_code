@@ -1,0 +1,36 @@
+#include <stdio.h>
+
+int main() {
+    int n;
+    long long k; // k 最大可达 10^9，使用 long long，读取用 %lld
+    if (scanf("%d %lld", &n, &k) != 2) return 0;
+
+    int a[1005];
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    // 关键：取模，避免无效移动
+    k = k % n;
+    int split = n - k; // 分界点
+
+    int first = 1; // 用于控制空格
+
+    // 1. 先输出后半段（从 n-k 到 n-1）
+    for (int i = split; i < n; i++) {
+        if (!first) printf(" ");
+        printf("%d", a[i]);
+        first = 0;
+    }
+    
+    // 2. 再输出前半段（从 0 到 n-k-1）
+    for (int i = 0; i < split; i++) {
+        if (!first) printf(" ");
+        printf("%d", a[i]);
+        first = 0;
+    }
+    
+    printf("\n");
+
+    return 0;
+}
