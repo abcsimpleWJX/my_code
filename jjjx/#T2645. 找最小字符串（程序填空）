@@ -1,0 +1,38 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* 函数一：从键盘读入 m 个姓名，存入二维字符数组 Str */
+void input(char Str[][20], int m) {
+    for (int i = 0; i < m; i++)
+        scanf("%s",Str[i]);
+}
+
+/* 函数二：通过指针数组 pStr 找出字典序最小的字符串并输出 */
+void sort_print(char* pStr[], int m) {
+    char minStr[20];                          /* 用来存放当前最小的字符串 */
+
+    /* 先把第 0 个串复制到 minStr 中作为基准 */
+    strcpy(minStr, pStr[0]);
+
+    for (int i = 1; i < m; i++) {
+        /* 若 pStr[i] 所指的串比 minStr 更小，则替换 minStr */
+        if (strcmp(pStr[i], minStr) < 0)
+            strcpy(minStr, pStr[i]);
+    }
+
+    printf("%s\n", minStr);
+}
+
+int main() {
+    char strArr[50][20];
+    char* p[50];
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++)
+        p[i] = strArr[i];                     /* 指针数组每个元素指向一个姓名 */
+    input(strArr,n);
+    sort_print(p,n);
+    return 0;
+}
