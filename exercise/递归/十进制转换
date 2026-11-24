@@ -1,0 +1,15 @@
+#include <stdio.h>
+void ch(int n, int base)
+{
+	if (n == 0) return;
+	ch(n / base, base);
+	printf("%d", n % base);
+}
+int main()
+{
+	int n, base;
+	scanf("%d %d", &n, &base);
+	if (n == 0) printf("0");
+	else ch(n, base);
+	return 0;
+}
