@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int pos[8];            // 记录每一列皇后所在的行号（0-7）
+int solutions[20][8];  // 用于存储去重后的12种本质不同的解
+int sol_count = 0;     // 记录找到的本质不同解的数量
+
+// 获取一个解的所有对称变换中，字典序最小的那个（规范形式）
+void get_min_transform(int* p, int* res) {
+    int p_inv[8];
+    // 求逆置换：p_inv[行] = 列
+    for (int i = 0; i < 8; i++) p_inv[p[i]] = i;
+
+    int trans[8][8];
+    // 1. 原图
+    for (int i = 0; i < 8; i++) trans[0][i] = p[i];
+    // 2. 顺时针旋转90度
+    for (int i = 0; i < 8; i++) trans[1][i] = p_inv[7 - i];
+    // 3. 旋转180度
+    for (int i = 0; i < 8; i++) trans[2][i] = 7 - p[7 - i];
+    // 4. 顺时针旋转270度（逆时针90度）
+    for (int i = 0; i < 8; i++) trans[3][i] = 7 - p_inv[i];
+    // 5. 左右翻转（水平对称）
+    for (int i = 0; i < 8; i++) trans[4][i] = p[7 - i];
+    // 6. 上下翻转（垂直对称）
+    for (int i = 0; i < 8; i++) trans[5][i] = 7 - p[i];
+    // 7. 主对角线翻转
+    for (int i = 0; i < 8; i++) trans[6][i] = p_inv[i];
+    // 8. 副对角线翻转
+    for (int i = 0; i < 8; i++) trans[7][i] = 7 - p_inv[7 - i];
+
+    // 找出这8个变换中最小的一个
+    for (int i = 0; i < 8; i++) res[i] = trans[0][i];
+    for (int i = 1; i < 8; i++) {
+        int is_better = 0;
+        for (int j = 0; j < 8; j++) {
+            if (trans[i][j] < res[j]) { is_better = 1; break; }
+            if (trans[i][j] > res[j]) { is_better = -1; break; }
+        }
+        if (is_better == 1) {
+            for (int j = 0; j < 8; j++) res[j] = trans[i][j];
+        }
+    }
+}
+
+// 检查在 (col, row) 位置放置皇后是否安全
+int check(int col, int row) {
+    for (int i = 0; i < col; i++) {
+        // 同一行 或 同一对角线冲突
+        if (pos[i] == row || abs(pos[i] - row) == abs(i - col)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// 回溯生成所有合法的八皇后解
+void dfs(int col) {
+    if (col == 8) {
+        // 找到一个完整解，求其规范形式
+        int min_arr[8];
+        get_min_transform(pos, min_arr);
+
+        // 检查该规范形式是否已经被记录过
+        for (int i = 0; i < sol_count; i++) {
+            int same = 1;
+            for (int j = 0; j < 8; j++) {
+                if (solutions[i][j] != min_arr[j]) { same = 0; break; }
+            }
+            if (same) return; // 已存在，直接返回
+        }
+
+        // 加入结果集
+        for (int i = 0; i < 8; i++) solutions[sol_count][i] = min_arr[i];
+        sol_count++;
+        return;
+    }
+
+    for (int row = 0; row < 8; row++) {
+        if (check(col, row)) {
+            pos[col] = row;
+            dfs(col + 1);
+        }
+    }
+}
+
+// 用于 qsort 的字典序比较函数
+int cmp_sol(const void* a, const void* b) {
+    int* arr1 = (int*)a;
+    int* arr2 = (int*)b;
+    for (int i = 0; i < 8; i++) {
+        if (arr1[i] != arr2[i]) return arr1[i] - arr2[i];
+    }
+    return 0;
+}
+
+int main() {
+    // 1. 生成并收集 12 个本质不同的解
+    dfs(0);
+
+    // 2. 对 12 个解按字典序排序
+    qsort(solutions, sol_count, sizeof(solutions[0]), cmp_sol);
+
+    // 3. 格式化输出
+    for (int i = 0; i < sol_count; i++) {
+        // 题目要求输出格式为 "No1: 1 5 8 6 3 7 2 4 "
+        printf("No%d:", i + 1);
+        for (int j = 0; j < 8; j++) {
+            // 题目中行号是 1-8，而我们数组中是 0-7，所以 +1
+            printf("%d ", solutions[i][j] + 1);
+             
+        }
+        if(i<sol_count-1)printf("\n");
+    }
+
+    return 0;
+}
